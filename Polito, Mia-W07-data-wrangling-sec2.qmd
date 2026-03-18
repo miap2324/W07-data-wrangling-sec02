@@ -1,0 +1,99 @@
+---
+title: "Data Wrangling with R"
+subtitle: "IBM 3202 Section 02"
+author: "Mia Polito"
+date: "2026-03-11"
+format:
+    html:
+        theme: cosmo
+        toc: true
+        toc-depth: 3
+        toc-location: right-body
+        embed-resources: true
+execute: 
+  freeze: auto
+---
+
+> **Note**: This codebook is based on the content of the lecture notes published on <https://jmjung.quarto.pub/m05-1-principles-data-wrangling-with-tidyverse-in-r/>
+
+# Overview
+
+## Learning Outcomes
+
+By the end of this module, you will be able to:
+
+-   Describe the concept of Data Wrangling.
+-   Describe how Tibbles are different from data frames
+-   Explain how to convert wide or long data to “Tidy” data
+-   Explain how to merge relational data sets using join functions. (Next module)
+-   Explain how to use grouped mutates and filter together.
+-   Be familiar with major dplyr functions for transforming data.
+-   Create a new variable with mutate() and case_when().
+-   Use the pipe operator to shape the data to prepare for analysis and visualization.
+
+::: callout-tip
+To use multi-cursor editing feature, do the following steps: 1. Select the text you want to edit. 2. Press 'shift + alt/option + i' to place a cursor at the end of each selected line. 3. You can now edit all the selected text simultaneously.
+:::
+
+# Introduction to Data Wrangling
+
+## Loading Packages
+
+**Note**:
+
+-   To add a `code chunk`, you can use the keyboard shortcut `Ctrl + Alt + I` (Windows/Linux) or `Cmd + Option + I` (Mac) in RStudio.
+-  In visual mode: `Ctrl +Alt +I` (Windows/Linux) or `Cmd + Option + I` (Mac) in RStudio.
+
+-  In source mode: `Ctrl + Shift + I` (Windows/Linux) or `Cmd + Shift +I` (Mac) in RStudio.
+
+```{r}
+# install.packages("tidyverse")
+# install.packages("nycflights13")
+library(tidyverse)
+library(nycflights13)
+```
+
+## Tibbles vs Data Frames
+
+```{r}
+class(mtcars)
+
+cars.tib <- mtcars |> 
+  rownames_to_column(var = "model") |> 
+  as_tibble()
+
+cars.tib
+class(cars.tib)
+typeof(cars.tib)
+```
+
+## Data Wrangling with dplyr
+
+```{r}
+data()
+```
+
+**Data sets in the package `nycflights13`:**
+
+-  airlines         Airline names.
+-  airports         Airport metadata
+-  flights          Flights data
+-  planes           Plane metadata.
+-  weather          Hourly weather data
+
+```{r}
+flights_df <- flights
+
+flights_df |> 
+  count(year, month) |>
+  arrange(desc(n)) |>
+  mutate(month = factor(month)) |>
+  mutate(month = fct_reorder(month, n)) |>
+  ggplot(aes(month, n, fill = year)) +
+  geom_col(show.legend = FALSE) +
+   coord_flip()
+  labs(x = "Month",
+       y = "# of Flights",
+       title = "# of flights by Month during year 2013 at New York") +
+  theme_bw()
+```
